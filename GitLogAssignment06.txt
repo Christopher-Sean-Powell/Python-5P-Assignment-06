@@ -1,0 +1,649 @@
+PLEASE NOTE:  If you are wondering why this very last commit shows the whole program as being added, it’s because I was working on the program in another file (I copied everything from this file into the other file) and while working on it I had fixed small bugs in the functions that I had already written in this (original) file. So, rather than try to remember/find all of those bugs again in this original file I simply copy and pasted the entire program back into this file since I was positive that the whole program was working. Hope that clarification helps. Cheers.
+
+
+commit bd121b6bc0f531e5e95b77b1144a09828472afe0
+Author: Chris <cspowell@ucsc.edu>
+Date:   Tue May 20 17:45:49 2014 -0700
+
+    I wrote a bunch of stuff (forgot to commit for a while...): wrote out everything to go under the "if name = main" statement. Also wrote 3 more functions in order to accomplish all of the requirements. I believe the program is fully operational now!
+
+diff --git a/word_count.py b/word_count.py
+index dcca682..fb46e45 100644
+--- a/word_count.py
++++ b/word_count.py
+@@ -21,11 +21,13 @@ def count_letters (s):
+     '''This function takes a string as input, and makes it lowercase. It then counts the number of times that every letter appears in the string.'''
+     d = {}
+     s = s.lower()
++    s = no_punct(s)
+     letters = "abcdefghijklmnopqrstuvwxzy"
+     for ltr in letters:
+         d[ltr] = 0
+-        if ltr in s:
+-            d[ltr] += 1
++    for i in range (len(s)):
++        if s[i] in letters:
++            d[(s[i])] += 1
+     return d
+ 
+ 
+@@ -39,11 +41,9 @@ def letters_total (l):
+ 
+ 
+ def count_words (s):
+-    ''' This function takes a string as input, and then removes all punctuation from that string using the function
+-    no_punct(s), converts the whole string to lowercase, and then splits the string up into a list of its individual
+-    words. Then, it counts the occurrences of every word in the string and returns this information as a dictionary.'''
+-    s = s.lower()
++    ''' This function takes a string as input, and then removes all punctuation from that string using the function no_punct(s), converts the whole string to lower case, and then splits the string up into a list of its individual words. Then the number of appearances of each word are counted and returned as a dictionary.'''
+     s = no_punct(s)
++    s = s.lower()
+     l = s.split()
+     d = {}
+     for w in l:
+@@ -54,7 +54,22 @@ def count_words (s):
+     return d
+ 
+ 
+-# I got this function from lecture on 5-15. I tweaked it a tiny bit, but it was mostly given in class.
++def counts_one_word (s, w):
++    '''This function takes a string and a single word as input, and then returns the number of times that the entered
++    word appeared in the entered string.'''
++    counts = 0
++    s = no_punct(s)
++    s = s.lower()
++    l = s.split()
++    for i in range (len(l)):
++        if w == l[i]:
++            counts += 1
++        else:
++            pass
++    return counts
++
++
++# I got most of this next function from lecture on 5-15. I tweaked it a little bit to fit my needs.
+ 
+ def sorted_keys_by_value (d):
+     ''' This function takes a dictionary as an input, and then orders that dictionary based on the values of each key.
+@@ -105,73 +120,186 @@ def thirty_frequency (book, tuple_list):
+     return remade_tuples
+ 
+ 
+-def top_30_combined (l1, l2, l3):
+-    new_list0 = []
+-    new_list1 = []
+-    for i in range (30):
+-        for j in range (30):
+-            for k in range (30):
+-                if l1[k][0] == l2[j][0] and l1[k][0] == l3[i][0]:
+-                    new_list0.append ((l1[k][0], (l1[k][1] + l2[j][1] + l3[i][1])/ 3.0))
+-                elif l1[k][0] == l2[j][0] or l1[k][0] == l3[i][0]:
+-                    new_list1.append ((l1[k][0], l1[k][1]))
+-                else:
+-                    pass
+-    return new_list0
+-
+-
+ def words_in_all_30(l1, l2, l3):
+-    new_list0 = []
++    '''This function takes 3 lists (of tuples) as input, and then it creates a new list that contains only the values
++    that were found in all 3 lists, along with their frequencies (averaged). Output is a dictionary.'''
++    new_dict = {}
+     for i in range (30):
+         for j in range (30):
+             for k in range (30):
+                 if l1[k][0] == l2[j][0] and l1[k][0] == l3[i][0]:
+-                    new_list0.append (l1[k][0])
++                    new_dict[l1[k][0]] = ((l1[k][1] + l2[k][1] + l3[k][1]) / 3.0)
+                 else:
+                     pass
+-    return new_list0
++    return new_dict
+ 
+ 
+ def process_book (book_file):
+     '''This function takes the name of a text file (a string) as an input, and then it opens and reads that text file,
+     returning the following information: the number of times every word in the book is used, and the number of times
+     every letter in the alphabet was used. This information is returned as a tuple of two dictionaries.'''
+-    file = open (book_file, "r")
+-    new_file = no_punct(file)
++    file_1 = open (book_file, "r")
++    new_file = no_punct(file_1)
+     word_count = count_words (new_file)
+     letter_count = count_letters(new_file)
+     return (word_count, letter_count)
+ 
++if __name__ == '__main__':
++
++    wells = open("wells.txt", "r")
++    wells = no_punct(wells)
++    wells_words = count_words(wells)
++    wells_30 = top_thirty(wells_words)
++    wells_30_freq = thirty_frequency(wells, wells_30)
++    wells_letters = count_letters(wells)
++    wells_ltrs_ordered = sorted_keys_by_value(wells_letters)
++    wells_ltrs_total = float(letters_total(wells_ltrs_ordered)) / 100.0
++
++    stevenson = open("stevenson.txt", "r")
++    stevenson = no_punct(stevenson)
++    stevenson_words = count_words(stevenson)
++    stevenson_30 = top_thirty(stevenson_words)
++    stevenson_30_freq = thirty_frequency(stevenson, stevenson_30)
++    stevenson_letters = count_letters(stevenson)
++    stevenson_ltrs_ordered = sorted_keys_by_value(stevenson_letters)
++    stevenson_ltrs_total = float(letters_total(stevenson_ltrs_ordered)) / 100.0
++
++    dickens = open("dickens.txt", "r")
++    dickens = no_punct(dickens)
++    dickens_words = count_words(dickens)
++    dickens_30 = top_thirty(dickens_words)
++    dickens_30_freq = thirty_frequency(dickens, dickens_30)
++    dickens_letters = count_letters(dickens)
++    dickens_ltrs_ordered = sorted_keys_by_value(dickens_letters)
++    dickens_ltrs_total = float(letters_total(dickens_ltrs_ordered)) / 100.0
++
++    words_in_all = words_in_all_30(wells_30_freq, stevenson_30_freq, dickens_30_freq)
++    ordered_words_all = sorted_keys_by_value(words_in_all)
++
++
++    def overall_ltr_freq (w1, s1, d1):
++        '''This function takes 3 lists as input. Its use is very particular to the program word_count. It takes the
++        lists of tuples which contain the information for the frequency of each letter in the three books, and returns
++        a new dictionary that contains the frequency of letter use across all 3 books, with each book weighted
++        equally.'''
++
++        new_list = []
++        new_dict = {}
++        w1_new = []
++        s1_new = []
++        d1_new = []
++        for ltr in "abcdefghijklmnopqrstuvwxyz":
++            for i in range (26):
++                if w1[i][0] == ltr:
++                    w1_new.append((w1[i][0], w1[i][1] / wells_ltrs_total))
++                if s1[i][0] == ltr:
++                    s1_new.append((s1[i][0], s1[i][1] / stevenson_ltrs_total))
++                if d1[i][0] == ltr:
++                    d1_new.append((d1[i][0], d1[i][1] / dickens_ltrs_total))
++                else:
++                    pass
++        for j in range (26):
++            new_list.append((w1_new[j][0], ((w1_new[j][1] + s1_new[j][1] + d1_new[j][1])) / 3.0))
++
++        for k in range (26):
++            new_dict[new_list[k][0]] = new_list[k][1]
++
++        return new_dict
++
++
++    overall_ltr_frequencies = overall_ltr_freq(wells_ltrs_ordered, stevenson_ltrs_ordered, dickens_ltrs_ordered)
++    ordered_frequencies = sorted_keys_by_value(overall_ltr_frequencies)
++
++
++    def top_30_combined (w1, book1, s1, book2, d1, book3):
++        '''This function is rather complicated, and only very useful for the program word_count. It takes as input three
++        books (or strings), as well as 3 lists of tuples that contain the top 30 words that appear in each of the books.
++        It then combines these top 30 lists, and creates a new list (without repeats). Then, it searches through all 3
++        books for the number of times each word in the new list appears, and sums those numbers. Then it inputs this
++        information into a new dictionary, and divides the numbers by the total number of words in all 3 books, hence
++        finding the percentages associated with the occurence of each word. The output is in the form of a dictionary.'''
++
++        book1 = no_punct(book1)
++        book_list1 = book1.split()
++        total_words1 = float(len(book_list1))
++        book2 = no_punct(book2)
++        book_list2 = book2.split()
++        total_words2 = float(len(book_list2))
++        book3 = no_punct(book3)
++        book_list3 = book3.split()
++        total_words3 = float(len(book_list3))
++        new_dict = {}
++        new_dict2 = {}
++        for i in range (30):
++            if w1[i][0] in new_dict:
++                new_dict[w1[i][0]] += 0
++            else:
++                new_dict[w1[i][0]] = 0
++            if s1[i][0] in new_dict:
++                new_dict[s1[i][0]] += 0
++            else:
++                new_dict[s1[i][0]] = 0
++            if d1[i][0] in new_dict:
++                new_dict[d1[i][0]] += 0
++            else:
++                new_dict[d1[i][0]] = 0
++        new_list = new_dict.keys()
++        if "utterson" in new_list:
++            new_list.remove('utterson')
++        for i in range (len(new_list)):
++            new_dict2[new_list[i]] = 0
++            new_dict2[new_list[i]] = counts_one_word(book1, new_list[i]) + counts_one_word(book2, new_list[i]) + counts_one_word(book3, new_list[i])
++            new_dict2[new_list[i]] /= (total_words1 + total_words2 + total_words3)
++            new_dict2[new_list[i]] *= 100.0
++        return new_dict2
+ 
+ 
++    top_30_combined1 = top_30_combined(wells_30_freq, wells, stevenson_30_freq, stevenson, dickens_30_freq, dickens)
++    top_30_combined2 = sorted_keys_by_value(top_30_combined1)
++    top_30_combined3 = top_30_combined2[0:30]
+ 
+ 
++    print ""
++    print "Wells Top 30 Words:"
++    for i in range (30):
++        print '{0:18s} : {1:.3f}%'.format(wells_30[i][0], thirty_frequency(wells, wells_30)[i][1])
+ 
+-def overall_ltr_freq (w1, s1, d1):
+-    '''This function takes 3 lists as input. Its use is very particular to the program word_count. It takes the lists
+-    of tuples which contain the information for the frequency of each letter in the three books, and returns a new
+-    dictionary that contains the frequency of letter use across all 3 books, with each book weighted equally.'''
+-    new_list = []
+-    new_dict = {}
+-    w1_new = []
+-    s1_new = []
+-    d1_new = []
+-    for ltr in "abcdefghijklmnopqrstuvwxyz":
+-        for i in range (26):
+-            if w1[i][0] == ltr:
+-                w1_new.append((w1[i][0], w1[i][1] / wells_ltrs_total))
+-            if s1[i][0] == ltr:
+-                s1_new.append((s1[i][0], s1[i][1] / stevenson_ltrs_total))
+-            if d1[i][0] == ltr:
+-                d1_new.append((d1[i][0], d1[i][1] / dickens_ltrs_total))
+-            else:
+-                pass
++    print ""
++    print "Wells Letter Frequencies:"
+     for j in range (26):
+-        new_list.append((w1_new[j][0], ((w1_new[j][1] + s1_new[j][1] + d1_new[j][1])) / 3.0))
++        print '{0:18s} : {1:.3f}%'.format(wells_ltrs_ordered[j][0], wells_ltrs_ordered[j][1]/wells_ltrs_total)
+ 
+-    for k in range (26):
+-        new_dict[new_list[k][0]] = new_list[k][1]
++    print ""
++    print "Stevenson Top 30 Words:"
++    for i in range (30):
++        print '{0:18s} : {1:.3f}%'.format(stevenson_30[i][0], thirty_frequency(stevenson, stevenson_30)[i][1])
+ 
+-    return new_dict
++    print ""
++    print "Stevenson Letter Frequencies:"
++    for j in range (26):
++        print '{0:18s} : {1:.3f}%'.format(stevenson_ltrs_ordered[j][0], stevenson_ltrs_ordered[j][1]/stevenson_ltrs_total)
++
++    print ""
++    print "Dickens Top 30 Words:"
++    for i in range (30):
++        print '{0:18s} : {1:.3f}%'.format(dickens_30[i][0], thirty_frequency(dickens, dickens_30)[i][1])
+ 
++    print ""
++    print "Dickens Letter Frequencies:"
++    for j in range (26):
++        print '{0:18s} : {1:.3f}%'.format(dickens_ltrs_ordered[j][0], dickens_ltrs_ordered[j][1]/dickens_ltrs_total)
++
++    print ""
++    print "Overall Top 30 Words:"
++    for w in range (30):
++        print '{0:18s} : {1:.3f}%'.format(top_30_combined3[w][0], top_30_combined3[w][1])
++
++    print ""
++    print "Overall Letter Frequencies:"
++    for k in range (26):
++        print '{0:18s} : {1:.3f}%'.format (ordered_frequencies[k][0], ordered_frequencies[k][1])
+ 
++    print ""
++    print "Words in all three Top 30 lists:"
++    for i in range (22):
++        print ordered_words_all[i][0]
+
+commit 69372935aa61e9a8a3e43bf5e5ceb4939cd4fd97
+Author: Chris <cspowell@ucsc.edu>
+Date:   Tue May 20 10:40:46 2014 -0700
+
+    Wrote a function to find the frequency of letter use across all 3 books, weighted equally.
+
+diff --git a/word_count.py b/word_count.py
+index b91af6c..dcca682 100644
+--- a/word_count.py
++++ b/word_count.py
+@@ -105,6 +105,33 @@ def thirty_frequency (book, tuple_list):
+     return remade_tuples
+ 
+ 
++def top_30_combined (l1, l2, l3):
++    new_list0 = []
++    new_list1 = []
++    for i in range (30):
++        for j in range (30):
++            for k in range (30):
++                if l1[k][0] == l2[j][0] and l1[k][0] == l3[i][0]:
++                    new_list0.append ((l1[k][0], (l1[k][1] + l2[j][1] + l3[i][1])/ 3.0))
++                elif l1[k][0] == l2[j][0] or l1[k][0] == l3[i][0]:
++                    new_list1.append ((l1[k][0], l1[k][1]))
++                else:
++                    pass
++    return new_list0
++
++
++def words_in_all_30(l1, l2, l3):
++    new_list0 = []
++    for i in range (30):
++        for j in range (30):
++            for k in range (30):
++                if l1[k][0] == l2[j][0] and l1[k][0] == l3[i][0]:
++                    new_list0.append (l1[k][0])
++                else:
++                    pass
++    return new_list0
++
++
+ def process_book (book_file):
+     '''This function takes the name of a text file (a string) as an input, and then it opens and reads that text file,
+     returning the following information: the number of times every word in the book is used, and the number of times
+@@ -116,3 +143,35 @@ def process_book (book_file):
+     return (word_count, letter_count)
+ 
+ 
++
++
++
++
++def overall_ltr_freq (w1, s1, d1):
++    '''This function takes 3 lists as input. Its use is very particular to the program word_count. It takes the lists
++    of tuples which contain the information for the frequency of each letter in the three books, and returns a new
++    dictionary that contains the frequency of letter use across all 3 books, with each book weighted equally.'''
++    new_list = []
++    new_dict = {}
++    w1_new = []
++    s1_new = []
++    d1_new = []
++    for ltr in "abcdefghijklmnopqrstuvwxyz":
++        for i in range (26):
++            if w1[i][0] == ltr:
++                w1_new.append((w1[i][0], w1[i][1] / wells_ltrs_total))
++            if s1[i][0] == ltr:
++                s1_new.append((s1[i][0], s1[i][1] / stevenson_ltrs_total))
++            if d1[i][0] == ltr:
++                d1_new.append((d1[i][0], d1[i][1] / dickens_ltrs_total))
++            else:
++                pass
++    for j in range (26):
++        new_list.append((w1_new[j][0], ((w1_new[j][1] + s1_new[j][1] + d1_new[j][1])) / 3.0))
++
++    for k in range (26):
++        new_dict[new_list[k][0]] = new_list[k][1]
++
++    return new_dict
++
++
+
+commit e44dd67f7055d5ebb8b650d88377384033115f08
+Author: Chris <cspowell@ucsc.edu>
+Date:   Mon May 19 20:41:03 2014 -0700
+
+    Tweaked the thirty_frequency function a little bit.
+
+diff --git a/word_count.py b/word_count.py
+index d22adf9..b91af6c 100644
+--- a/word_count.py
++++ b/word_count.py
+@@ -95,11 +95,14 @@ def thirty_frequency (book, tuple_list):
+     book = no_punct(book)
+     book_list = book.split()
+     total_words = float(len(book_list))
+-    tuple_list = tuple_to_list(tuple_list)
++    no_tuple_list = tuple_to_list(tuple_list)
++    remade_tuples = []
+     for j in range (30):
+-        tuple_list[j] /= total_words
+-        tuple_list[j] *= 100.0
+-    return tuple_list
++        no_tuple_list[j] /= total_words
++        no_tuple_list[j] *= 100.0
++    for k in range (30):
++        remade_tuples.append ((tuple_list[k][0], no_tuple_list[k]))
++    return remade_tuples
+ 
+ 
+ def process_book (book_file):
+
+commit 26e76bd1a1845aff3abf1070e98c2b57e3567e76
+Author: Chris <cspowell@ucsc.edu>
+Date:   Mon May 19 20:26:49 2014 -0700
+
+    I wrote a few more functions (tuple_to_list and thirty_frequency).
+
+diff --git a/word_count.py b/word_count.py
+index fd5f9af..d22adf9 100644
+--- a/word_count.py
++++ b/word_count.py
+@@ -70,6 +70,15 @@ def sorted_keys_by_value (d):
+     return sorted_keys
+ 
+ 
++def tuple_to_list (t):
++    '''This function takes a list of tuples, and returns a new list composed solely of the second value in each tuple.'''
++    new_list = [0]*30
++    for j in range (30):
++        new_list[j] = 0
++        new_list[j] += t[j][1]
++    return new_list
++
++
+ def top_thirty (word_count):
+     '''This function takes a dictionary as an input, and then it reorders that dictionary using the function
+     sorted_keys_by_value. It then returns the new sorted list (a list of tuples), and slices the list to only
+@@ -79,6 +88,20 @@ def top_thirty (word_count):
+     return new_list
+ 
+ 
++def thirty_frequency (book, tuple_list):
++    '''This function takes 2 inputs: a string and a list (of tuples) of the number of times the top 30 words in that
++    string are used. It then takes the number of times each word is seen and divides those numbers by the total number
++    of words in the string to return the percentage the top 30 words were used in the entire string.'''
++    book = no_punct(book)
++    book_list = book.split()
++    total_words = float(len(book_list))
++    tuple_list = tuple_to_list(tuple_list)
++    for j in range (30):
++        tuple_list[j] /= total_words
++        tuple_list[j] *= 100.0
++    return tuple_list
++
++
+ def process_book (book_file):
+     '''This function takes the name of a text file (a string) as an input, and then it opens and reads that text file,
+     returning the following information: the number of times every word in the book is used, and the number of times
+
+commit 293afa07d26df9e1ddb67a6317ec18f3bf7d8698
+Author: Chris <cspowell@ucsc.edu>
+Date:   Mon May 19 19:40:48 2014 -0700
+
+    I wrote a function to find the total number of times a letter is used in the given book.
+
+diff --git a/word_count.py b/word_count.py
+index 5df4f54..fd5f9af 100644
+--- a/word_count.py
++++ b/word_count.py
+@@ -8,7 +8,7 @@ __author__ = 'Chris'
+ 
+ 
+ def no_punct(s):
+-    ''' This function takes a string as input and returns that string without any kind of punctuaiton symbols.'''
++    ''' This function takes a string as input and returns that string without any kind of punctuation symbols.'''
+     punctuation = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+     s_no_punct = ""
+     for letter in s:
+@@ -29,6 +29,15 @@ def count_letters (s):
+     return d
+ 
+ 
++def letters_total (l):
++    ''' This function takes an ordered list of tuples, such as the output from sorted_keys_by_value, and sums up the
++    values in the second slot in the tuple.'''
++    total = 0
++    for i in range (26):
++        total += l[i][1]
++    return total
++
++
+ def count_words (s):
+     ''' This function takes a string as input, and then removes all punctuation from that string using the function
+     no_punct(s), converts the whole string to lowercase, and then splits the string up into a list of its individual
+@@ -80,3 +89,4 @@ def process_book (book_file):
+     letter_count = count_letters(new_file)
+     return (word_count, letter_count)
+ 
++
+
+commit 555150024458e034cf13a5f7cc8ced5c662bf626
+Author: Chris <cspowell@ucsc.edu>
+Date:   Mon May 19 16:50:13 2014 -0700
+
+    I wrote the two functions, top_thirty and process_book, that were specified in the assignment description.
+
+diff --git a/word_count.py b/word_count.py
+index 848bd6a..5df4f54 100644
+--- a/word_count.py
++++ b/word_count.py
+@@ -48,6 +48,8 @@ def count_words (s):
+ # I got this function from lecture on 5-15. I tweaked it a tiny bit, but it was mostly given in class.
+ 
+ def sorted_keys_by_value (d):
++    ''' This function takes a dictionary as an input, and then orders that dictionary based on the values of each key.
++    This reordered list is returned as a list of tuples.'''
+     counts = []
+     for k in d.keys():
+         counts.append ((d[k], k))
+@@ -58,3 +60,23 @@ def sorted_keys_by_value (d):
+         sorted_keys.append ((item[1], item[0]))
+     return sorted_keys
+ 
++
++def top_thirty (word_count):
++    '''This function takes a dictionary as an input, and then it reorders that dictionary using the function
++    sorted_keys_by_value. It then returns the new sorted list (a list of tuples), and slices the list to only
++    include the top 30 words.'''
++    list = sorted_keys_by_value(word_count)
++    new_list = list[0:30]
++    return new_list
++
++
++def process_book (book_file):
++    '''This function takes the name of a text file (a string) as an input, and then it opens and reads that text file,
++    returning the following information: the number of times every word in the book is used, and the number of times
++    every letter in the alphabet was used. This information is returned as a tuple of two dictionaries.'''
++    file = open (book_file, "r")
++    new_file = no_punct(file)
++    word_count = count_words (new_file)
++    letter_count = count_letters(new_file)
++    return (word_count, letter_count)
++
+
+commit bdfb8ed367d94397de742582f6f37a336aada1c2
+Author: Chris <cspowell@ucsc.edu>
+Date:   Mon May 19 14:12:31 2014 -0700
+
+    I tweaked a function given in class on 5-15 to take the dictionaries that count the use of each word/letter and return them as a list of tuples ordered by the values of the dictionary.
+
+diff --git a/word_count.py b/word_count.py
+index a8dcdc0..848bd6a 100644
+--- a/word_count.py
++++ b/word_count.py
+@@ -6,8 +6,6 @@ __author__ = 'Chris'
+ 
+ # Note: I deleted all of the extraneous words form my text files, so they only contain the words that are in the books. I downloaded all three of the books from http://www.gutenberg.org/wiki/Main_Page.
+ 
+-# There will be alot of useful functions from the 5-15-14 lecture. Also useful may be stuff from the lecture (or two) before that. Must find the books and strip out any unnecessary words. Then convert all books to lowercase, and remove all punctuation. Use the string method ".strip()" to turn the books into lists of strings (for each word). Then use the functions from class to turn that into a list of tuples/dictionaries (dont remember which the function does..) that counts the use of each word. Do the same for the number of letters. These parts should all be pretty easy; the only difficult part of the assignment seems to be the frequency part, which should be WEIGHTED EQUALLY PER EACH BOOK. This is explained well in the comment on piazza labeled "top 30 word/letter in all 3 books".
+-
+ 
+ def no_punct(s):
+     ''' This function takes a string as input and returns that string without any kind of punctuaiton symbols.'''
+@@ -32,7 +30,9 @@ def count_letters (s):
+ 
+ 
+ def count_words (s):
+-    ''' This function takes a string as input, and then removes all punctuation from that string using the function no_punct(s), converts the whole string to lower case, and then splits the string up into a list of its individual words. Then the number of appearances of each word are counted and returned as a dictionary.'''
++    ''' This function takes a string as input, and then removes all punctuation from that string using the function
++    no_punct(s), converts the whole string to lowercase, and then splits the string up into a list of its individual
++    words. Then, it counts the occurrences of every word in the string and returns this information as a dictionary.'''
+     s = s.lower()
+     s = no_punct(s)
+     l = s.split()
+@@ -43,3 +43,18 @@ def count_words (s):
+         else:
+             d[w] = 1
+     return d
++
++
++# I got this function from lecture on 5-15. I tweaked it a tiny bit, but it was mostly given in class.
++
++def sorted_keys_by_value (d):
++    counts = []
++    for k in d.keys():
++        counts.append ((d[k], k))
++    counts.sort()
++    counts.reverse()
++    sorted_keys = []
++    for item in counts:
++        sorted_keys.append ((item[1], item[0]))
++    return sorted_keys
++
+
+commit ae5c4092ca4aaa1082abe0e9558e02276b03e789
+Author: Chris <cspowell@ucsc.edu>
+Date:   Sat May 17 12:30:50 2014 -0700
+
+    Wrote a function to remove punctuation from a string, another to count the occurrences of every word in a string, and another to count the number of times each letter appeared in a string.
+
+diff --git a/word_count.py b/word_count.py
+new file mode 100644
+index 0000000..a8dcdc0
+--- /dev/null
++++ b/word_count.py
+@@ -0,0 +1,45 @@
++__author__ = 'Chris'
++
++# Christopher Powell
++# cspowell@ucsc.edu
++# Assignment06: What's the Frequency, Kenneth?
++
++# Note: I deleted all of the extraneous words form my text files, so they only contain the words that are in the books. I downloaded all three of the books from http://www.gutenberg.org/wiki/Main_Page.
++
++# There will be alot of useful functions from the 5-15-14 lecture. Also useful may be stuff from the lecture (or two) before that. Must find the books and strip out any unnecessary words. Then convert all books to lowercase, and remove all punctuation. Use the string method ".strip()" to turn the books into lists of strings (for each word). Then use the functions from class to turn that into a list of tuples/dictionaries (dont remember which the function does..) that counts the use of each word. Do the same for the number of letters. These parts should all be pretty easy; the only difficult part of the assignment seems to be the frequency part, which should be WEIGHTED EQUALLY PER EACH BOOK. This is explained well in the comment on piazza labeled "top 30 word/letter in all 3 books".
++
++
++def no_punct(s):
++    ''' This function takes a string as input and returns that string without any kind of punctuaiton symbols.'''
++    punctuation = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
++    s_no_punct = ""
++    for letter in s:
++        if letter not in punctuation:
++            s_no_punct += letter
++    return s_no_punct
++
++
++def count_letters (s):
++    '''This function takes a string as input, and makes it lowercase. It then counts the number of times that every letter appears in the string.'''
++    d = {}
++    s = s.lower()
++    letters = "abcdefghijklmnopqrstuvwxzy"
++    for ltr in letters:
++        d[ltr] = 0
++        if ltr in s:
++            d[ltr] += 1
++    return d
++
++
++def count_words (s):
++    ''' This function takes a string as input, and then removes all punctuation from that string using the function no_punct(s), converts the whole string to lower case, and then splits the string up into a list of its individual words. Then the number of appearances of each word are counted and returned as a dictionary.'''
++    s = s.lower()
++    s = no_punct(s)
++    l = s.split()
++    d = {}
++    for w in l:
++        if w in d:
++            d[w] += 1
++        else:
++            d[w] = 1
++    return d
